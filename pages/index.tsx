@@ -1,5 +1,6 @@
 import { NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { debounce } from 'lodash';
 import Movie from '../components/Movie';
 import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/react/solid';
 
@@ -7,15 +8,15 @@ const Home: NextPage = () => {
 	const [movies, setMovies] = useState<any[]>([]);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [error, setError] = useState(null);
-	const [page, setPage] = useState(1);
+	const [currentPage, setCurrentPage] = useState(1);
 
 	const MOVIE_API = process.env.NEXT_PUBLIC_MOVIE_DB_API_KEY;
-	const FEATURED_API = `https://api.themoviedb.org/3/movie/popular?api_key=${MOVIE_API}&language=en-US&page=${page}`;
+	const FEATURED_API = `https://api.themoviedb.org/3/movie/popular?api_key=${MOVIE_API}&language=en-US&page=${currentPage}`;
 	const SEARCH_API = `https://api.themoviedb.org/3/search/movie?api_key=${MOVIE_API}&language=en-US&page=1&query=`;
 
 	useEffect(() => {
 		getMovies(FEATURED_API);
-	}, []);
+	}, [currentPage]);
 
 	const getMovies = (API: RequestInfo) => {
 		const controller = new AbortController();
@@ -23,7 +24,7 @@ const Home: NextPage = () => {
 		fetch(API, { signal: signal })
 			.then((res) => res.json())
 			.then((data) => {
-				// console.log(data);
+				console.log(data);
 				setMovies(data.results);
 			})
 			.catch((error) => {
@@ -45,31 +46,45 @@ const Home: NextPage = () => {
 		}
 	};
 
-	const previousPage = () => {
-		if (page > 1) {
-			setPage(page - 1);
+	// const debouncedSearch = useRef(
+	// 	debounce((searchTerm) => {
+	// 		setSearchTerm(searchTerm);
+	// 	}, 500)
+	// ).current;
+	// console.log(searchTerm);
+
+	// useEffect(() => {
+	// 	return () => {
+	// 		debouncedSearch.cancel();
+	// 	};
+	// }, [debouncedSearch]);
+
+	// FIXME: refactor this to useRef
+	const debouncedSearch = debounce(async (searchTerm) => {
+		if (searchTerm !== '') {
+			setSearchTerm(searchTerm);
+			getMovies(SEARCH_API + searchTerm);
+		} else {
 			getMovies(FEATURED_API);
 		}
-	};
+	}, 500);
 
-	const nextPage = () => {
-		setPage(page + 1);
-		getMovies(FEATURED_API);
-	};
+	async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+		debouncedSearch(e.target.value);
+	}
 
 	return (
 		<>
 			<div className="bg-gray-900 h-screen  overflow-y-scroll scrollbar-hide">
 				<header className="flex justify-center bg-gray-800 p-4">
-					<form onSubmit={handleOnSubmit}>
-						<input
-							className="bg-gray-900 rounded-lg p-2 text-yellow-300 focus:outline-none focus:border-yellow-300 focus:ring-1 focus:ring-yellow-300"
-							type="search"
-							placeholder="Search Movies"
-							value={searchTerm}
-							onChange={(e) => setSearchTerm(e.target.value)}
-						/>
-					</form>
+					<form onSubmit={handleOnSubmit}></form>
+					<input
+						className="bg-gray-900 rounded-lg p-2 text-yellow-300 focus:outline-none focus:border-yellow-300 focus:ring-1 focus:ring-yellow-300"
+						type="search"
+						placeholder="Search Movies"
+						// value={searchTerm}
+						onChange={handleChange}
+					/>
 				</header>
 				<div className="flex flex-wrap justify-center  text-yellow-300">
 					{movies.length > 0 &&
@@ -77,13 +92,28 @@ const Home: NextPage = () => {
 				</div>
 
 				<div className="flex items-center justify-center space-x-2 text-yellow-300">
-					<button onClick={previousPage}>
-						<ChevronDoubleLeftIcon className="h-10 w-10 text-yellow-300" />
-						<p>{page}</p>
-					</button>
-					<button onClick={nextPage}>
-						<ChevronDoubleRightIcon className="h-10 w-10 text-yellow-300" />
-						<p>{page + 1}</p>
+					{/* Previous Page */}
+					{currentPage > 1 && (
+						<button
+							onClick={() =>
+								currentPage > 1
+									? setCurrentPage((currentPage) => currentPage - 1)
+									: currentPage
+							}
+							type="button"
+						>
+							<ChevronDoubleLeftIcon className="h-10 w-10 text-yellow-300 hover:scale-125 transition duration-300 ease-in-out" />
+							<p>{currentPage - 1}</p>
+						</button>
+					)}
+
+					{/* Next Page */}
+					<button
+						onClick={() => setCurrentPage((currentPage) => currentPage + 1)}
+						type="button"
+					>
+						<ChevronDoubleRightIcon className="h-10 w-10 text-yellow-300 hover:scale-125 transition duration-300 ease-in-out" />
+						<p>{currentPage + 1}</p>
 					</button>
 				</div>
 			</div>
