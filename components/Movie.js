@@ -13,7 +13,7 @@ const setVoteColor = (vote) => {
 	}
 };
 
-const Movie = ({ title, poster_path, overview, vote_average }) => {
+const Movie = ({ title, poster_path, vote_average }) => {
 	return (
 		// Container
 		<div className="relative m-4 bg-gray-900 rounded-lg shadow-md shadow-black overflow-hidden w-[18.75rem] z-0 hover:opacity-50">
