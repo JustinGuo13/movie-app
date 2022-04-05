@@ -15,6 +15,15 @@
 		"jsx": "preserve",
 		"incremental": true
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_app.tsx", "pages/index.tsx"],
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		"pages/_app.tsx",
+		"pages/index.tsx",
+		"pages/api/axiosClient.js",
+		"pages/api/apiConfig.js",
+		"pages/api/tmdbApi.js"
+	],
 	"exclude": ["node_modules"]
 }
