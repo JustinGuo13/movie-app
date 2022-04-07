@@ -1,9 +1,9 @@
 import { NextPage } from 'next';
+import Head from 'next/head';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash';
 import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/react/solid';
-import { SearchIcon } from '@heroicons/react/outline';
 import { useRecoilState } from 'recoil';
 import { currentPageState, pageState } from '../atoms/pageAtom';
 import { isSearchingState, searchTermState } from '../atoms/searchBarAtom';
@@ -34,10 +34,23 @@ const Home: NextPage = () => {
 		fetch(API)
 			.then((res) => res.json())
 			.then((data) => {
-				console.log(data);
 				setMovies(data.results);
 				setTotalPages(data.total_pages);
 			});
+	};
+
+	const handleOnClick = () => {
+		setSearchState(false);
+		setCurrentPage(1);
+		getMovies(FEATURED_API);
+	};
+
+	const handleOnSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setSearchState(true);
+		setSearchTerm(searchTerm);
+		setCurrentPage(1);
+		getMovies(SEARCH_API + searchTerm);
 	};
 
 	const handleOnSubmitPage = (e: React.FormEvent<HTMLFormElement>) => {
@@ -45,7 +58,15 @@ const Home: NextPage = () => {
 		setCurrentPage(page);
 	};
 
-	// Debounce movie search after 1 second
+	const handleOnChangePage = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (Number(e.target.value) > totalPages) {
+			setPage(totalPages);
+		} else {
+			setPage(Number(e.target.value));
+		}
+	};
+
+	// Debounce movie search after .5 second
 	const debouncedSearch = useRef(
 		debounce(async (searchTerm) => {
 			if (searchTerm !== '') {
@@ -73,16 +94,27 @@ const Home: NextPage = () => {
 
 	return (
 		<>
+			<Head>
+				<title>{searchTerm === '' ? `MovieDB` : `${searchTerm} | MovieDB`}</title>
+				<meta charSet="UTF-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+				<meta property="og:title" content="MovieDB" key="title" />
+				<meta name="searchterm" content={searchTerm || ''} />
+			</Head>
 			<div className="bg-gray-900 h-screen overflow-y-scroll scrollbar-hide">
 				<header className="flex flex-wrap items-center justify-center bg-gray-800 p-4 gap-3">
 					<Image src={logo} width={60} height={60} />
-					<h1 className="text-yellow-300 text-3xl p-2">MovieDB</h1>
-					<input
-						type="search"
-						onChange={handleSearchChange}
-						className="h-10 w-40 bg-gray-900 rounded-lg text-yellow-300 focus:outline-none focus:border-yellow-300 focus:ring-1 focus:ring-yellow-300"
-						placeholder="Search Movies"
-					/>
+					<h1 className="text-yellow-300 text-3xl p-2" onClick={handleOnClick}>
+						MovieDB
+					</h1>
+					<form onSubmit={handleOnSubmitSearch}>
+						<input
+							type="search"
+							onChange={handleSearchChange}
+							className="h-10 w-40 bg-gray-900 rounded-lg text-yellow-300 focus:outline-none focus:border-yellow-300 focus:ring-1 focus:ring-yellow-300"
+							placeholder="Search Movies"
+						/>
+					</form>
 				</header>
 				{/* Movie List */}
 				<div className="flex flex-wrap justify-center flex-shrink-0  text-yellow-300">
@@ -104,7 +136,7 @@ const Home: NextPage = () => {
 						type="text"
 						placeholder="Go to page"
 						value={page || ''}
-						onChange={(e) => setPage(Number(e.target.value))}
+						onChange={handleOnChangePage}
 					/>
 				</form>
 
@@ -138,8 +170,8 @@ const Home: NextPage = () => {
 						</button>
 					)}
 				</div>
-				<footer className="text-center p-2 bg-gray-800 text-yellow-300">
-					© 2021 Copyright: MovieDB
+				<footer className="text-center p-2 text-yellow-300">
+					{'Copyright © '}MovieDB {new Date().getFullYear()}
 				</footer>
 			</div>
 		</>
