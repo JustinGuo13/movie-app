@@ -95,14 +95,14 @@ const Home: NextPage = () => {
 	return (
 		<>
 			<Head>
-				<title>{searchTerm === '' ? `MovieDB` : `${searchTerm} | MovieDB`}</title>
 				<meta charSet="UTF-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 				<meta property="og:title" content="MovieDB" key="title" />
 				<meta name="searchterm" content={searchTerm || ''} />
+				<title>{searchTerm === '' ? `MovieDB` : `${searchTerm} | MovieDB`}</title>
 			</Head>
 			<div className="bg-gray-900 h-screen overflow-y-scroll scrollbar-hide">
-				<header className="flex flex-wrap items-center justify-center bg-gray-800 p-4 gap-3">
+				<header className="flex flex-wrap items-center justify-center bg-gray-900 shadow-md shadow-black p-4 gap-3">
 					<Image src={logo} width={60} height={60} />
 					<h1 className="text-yellow-300 text-3xl p-2" onClick={handleOnClick}>
 						MovieDB
@@ -111,7 +111,7 @@ const Home: NextPage = () => {
 						<input
 							type="search"
 							onChange={handleSearchChange}
-							className="h-10 w-40 bg-gray-900 rounded-lg text-yellow-300 focus:outline-none focus:border-yellow-300 focus:ring-1 focus:ring-yellow-300"
+							className="h-10 w-40 bg-gray-800 rounded-lg text-yellow-300 pl-2 focus:outline-none focus:border-yellow-300 focus:ring-1 focus:ring-yellow-300"
 							placeholder="Search Movies"
 						/>
 					</form>
@@ -132,7 +132,7 @@ const Home: NextPage = () => {
 					onSubmit={handleOnSubmitPage}
 				>
 					<input
-						className="bg-gray-800 rounded-lg p-2 text-yellow-300 focus:outline-none focus:border-yellow-300 focus:ring-1 focus:ring-yellow-300"
+						className="bg-gray-800 rounded-lg p-2 w-24 h-10 text-yellow-300 focus:outline-none focus:border-yellow-300 focus:ring-1 focus:ring-yellow-300"
 						type="text"
 						placeholder="Go to page"
 						value={page || ''}
