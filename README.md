@@ -6,6 +6,10 @@ Used:
 *TypeScript
 *Next.js
 *TailwindCSS
+ Markup : * Bullet list
+              * Nested bullet
+                  * Sub-nested bullet etc
+          * Bullet list item 2
 
 Application allows:
 -To search for movies using TMDB API;
