@@ -6,7 +6,7 @@ import { debounce } from 'lodash';
 import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/react/solid';
 import { useRecoilState } from 'recoil';
 import { currentPageState, pageState } from '../atoms/pageAtom';
-import { isSearchingState, searchTermState } from '../atoms/searchBarAtom';
+import { isSearchingState, searchTermState } from '../atoms/searchbarAtom';
 import Movie from '../components/Movie';
 import logo from '../image/logo.png';
 
