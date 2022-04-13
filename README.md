@@ -8,6 +8,8 @@ Used:
 -   TypeScript
 -   Next.js
 -   TailwindCSS
+-   TMDB API
+-   Recoil
 
 Application allows:
 -   To search for movies using TMDB API
